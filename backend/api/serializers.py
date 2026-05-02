@@ -70,6 +70,12 @@ class GenerateComplaintSerializer(serializers.Serializer):
         max_digits=12,
         decimal_places=8
     )
+    complaintLanguage = serializers.CharField(
+        required=False,
+        allow_blank=True,
+        max_length=50,
+        default='English'
+    )
     classification = serializers.DictField(required=False)
 
 

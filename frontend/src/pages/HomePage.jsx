@@ -41,7 +41,8 @@ function HomePage() {
           urgency: classificationResult.urgency,
           reasoning: classificationResult.reasoning,
           authority: classificationResult.authority
-        }
+        },
+        data.complaintLanguage
       );
       setComplaint(complaintResult.formattedComplaint);
     } catch (err) {

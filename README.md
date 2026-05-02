@@ -7,6 +7,8 @@
 
 An intelligent, AI-powered civic issue reporting system that empowers citizens to transform informal complaints into professional, structured reports suitable for government submission. Built for the IBM Bob Hackathon.
 
+For the hackathon build narrative and IBM Bob usage summary, see [`BOB_BUILD_STORY.md`](BOB_BUILD_STORY.md).
+
 ## 🌟 Features
 
 - **Intelligent Classification**: Automatically categorizes civic issues into predefined domains (sanitation, roads, water, electricity, etc.)

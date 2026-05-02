@@ -7,7 +7,7 @@ import logging
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
-from django.db.models import Q
+from django.db.models import Q, Sum
 from django.utils import timezone
 
 from .models import CivicIssue
@@ -148,6 +148,7 @@ def generate_complaint(request):
         location = serializer.validated_data.get('location', '')
         latitude = serializer.validated_data.get('latitude')
         longitude = serializer.validated_data.get('longitude')
+        complaint_language = serializer.validated_data.get('complaintLanguage') or 'English'
         classification = serializer.validated_data.get('classification')
         if not classification:
             # Backward compatibility for clients that send classification fields at top-level
@@ -174,7 +175,8 @@ def generate_complaint(request):
             location,
             category,
             severity,
-            urgency
+            urgency,
+            complaint_language
         )
         
         # Get AI service and generate complaint
@@ -201,7 +203,8 @@ def generate_complaint(request):
         # Prepare response
         response_data = {
             "formattedComplaint": formatted_complaint,
-            "issueId": civic_issue.id
+            "issueId": civic_issue.id,
+            "complaintLanguage": complaint_language
         }
         
         logger.info(f"Successfully generated and saved complaint with ID {civic_issue.id}")
@@ -527,12 +530,28 @@ def get_issue_stats(request):
             'resolved': CivicIssue.objects.filter(status='resolved').count(),
             'rejected': CivicIssue.objects.filter(status='rejected').count(),
         }
+
+        total_votes = CivicIssue.objects.aggregate(total=Sum('vote_count'))['total'] or 0
+        impact_metrics = {
+            'high_priority': CivicIssue.objects.filter(
+                Q(severity__in=['high', 'critical']) |
+                Q(urgency__in=['high', 'immediate'])
+            ).count(),
+            'verified': CivicIssue.objects.filter(is_verified=True).count(),
+            'escalated': CivicIssue.objects.exclude(escalation_level='ward').count(),
+            'geo_tagged': CivicIssue.objects.filter(
+                latitude__isnull=False,
+                longitude__isnull=False
+            ).count(),
+            'community_votes': total_votes,
+        }
         
         return Response({
             "total_issues": total_issues,
             "by_category": category_counts,
             "by_severity": severity_counts,
-            "by_status": status_counts
+            "by_status": status_counts,
+            "impact": impact_metrics
         }, status=status.HTTP_200_OK)
         
     except Exception as e:

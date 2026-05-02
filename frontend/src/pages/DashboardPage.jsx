@@ -1,5 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { FiDownload, FiTrendingUp, FiAlertCircle, FiCheckCircle, FiClock } from 'react-icons/fi';
+import {
+  FiDownload,
+  FiTrendingUp,
+  FiAlertCircle,
+  FiCheckCircle,
+  FiClock,
+  FiMapPin,
+  FiShield,
+  FiZap,
+  FiThumbsUp
+} from 'react-icons/fi';
 import { getIssueStats, getCommunityIssues } from '../services/api';
 import LoadingSpinner from '../components/LoadingSpinner';
 import { SEVERITY_COLORS, CATEGORY_ICONS } from '../utils/constants';
@@ -108,6 +118,7 @@ const DashboardPage = () => {
   const statusCounts = stats?.by_status || {};
   const categoryCounts = stats?.by_category || {};
   const severityCounts = stats?.by_severity || {};
+  const impact = stats?.impact || {};
   const resolutionRate = totalIssues && statusCounts.resolved
     ? ((statusCounts.resolved / totalIssues) * 100).toFixed(1)
     : 0;
@@ -200,6 +211,61 @@ const DashboardPage = () => {
             <p className="text-sm text-gray-500 mt-4">
               Being addressed
             </p>
+          </div>
+        </div>
+
+        <div className="mb-8">
+          <h2 className="text-xl font-bold text-gray-900 mb-4">Civic Impact Snapshot</h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+            <div className="bg-white rounded-lg shadow-md p-5">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-gray-600">High Priority</p>
+                  <p className="text-2xl font-bold text-red-600 mt-2">{impact.high_priority || 0}</p>
+                </div>
+                <FiZap className="w-7 h-7 text-red-500" />
+              </div>
+            </div>
+
+            <div className="bg-white rounded-lg shadow-md p-5">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-gray-600">Community Votes</p>
+                  <p className="text-2xl font-bold text-blue-600 mt-2">{impact.community_votes || 0}</p>
+                </div>
+                <FiThumbsUp className="w-7 h-7 text-blue-500" />
+              </div>
+            </div>
+
+            <div className="bg-white rounded-lg shadow-md p-5">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-gray-600">Verified Reports</p>
+                  <p className="text-2xl font-bold text-green-600 mt-2">{impact.verified || 0}</p>
+                </div>
+                <FiShield className="w-7 h-7 text-green-500" />
+              </div>
+            </div>
+
+            <div className="bg-white rounded-lg shadow-md p-5">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-gray-600">Escalated Cases</p>
+                  <p className="text-2xl font-bold text-orange-600 mt-2">{impact.escalated || 0}</p>
+                </div>
+                <FiAlertCircle className="w-7 h-7 text-orange-500" />
+              </div>
+            </div>
+
+            <div className="bg-white rounded-lg shadow-md p-5">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-gray-600">Map Ready</p>
+                  <p className="text-2xl font-bold text-indigo-600 mt-2">{impact.geo_tagged || 0}</p>
+                </div>
+                <FiMapPin className="w-7 h-7 text-indigo-500" />
+              </div>
+            </div>
           </div>
         </div>
 

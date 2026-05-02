@@ -65,6 +65,16 @@ export const CATEGORY_ICONS = {
   'Other': '📋'
 };
 
+export const COMPLAINT_LANGUAGES = [
+  'English',
+  'Hindi',
+  'Bengali',
+  'Marathi',
+  'Tamil',
+  'Telugu',
+  'Kannada'
+];
+
 // Improvement types
 export const IMPROVEMENT_TYPES = [
   {

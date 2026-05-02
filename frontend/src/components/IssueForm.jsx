@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
 import { FiSend, FiMapPin } from 'react-icons/fi';
+import { COMPLAINT_LANGUAGES } from '../utils/constants';
 
 const IssueForm = ({ onSubmit, loading }) => {
   const [issueDescription, setIssueDescription] = useState('');
   const [location, setLocation] = useState('');
+  const [complaintLanguage, setComplaintLanguage] = useState('English');
   const [latitude, setLatitude] = useState(null);
   const [longitude, setLongitude] = useState(null);
   const [gettingLocation, setGettingLocation] = useState(false);
@@ -53,6 +55,7 @@ const IssueForm = ({ onSubmit, loading }) => {
       onSubmit({
         issueDescription: issueDescription.trim(),
         location: location.trim(),
+        complaintLanguage,
         latitude,
         longitude
       });
@@ -141,6 +144,28 @@ const IssueForm = ({ onSubmit, loading }) => {
               'Providing a location helps authorities respond faster and shows your issue on the community map'
             )}
           </p>
+        </div>
+
+        <div>
+          <label
+            htmlFor="complaintLanguage"
+            className="block text-sm font-medium text-gray-700 mb-2"
+          >
+            Complaint Language
+          </label>
+          <select
+            id="complaintLanguage"
+            value={complaintLanguage}
+            onChange={(e) => setComplaintLanguage(e.target.value)}
+            disabled={loading}
+            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+          >
+            {COMPLAINT_LANGUAGES.map((language) => (
+              <option key={language} value={language}>
+                {language}
+              </option>
+            ))}
+          </select>
         </div>
 
         {/* Submit Button */}

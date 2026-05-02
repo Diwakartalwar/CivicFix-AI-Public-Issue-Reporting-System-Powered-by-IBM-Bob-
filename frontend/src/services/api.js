@@ -36,15 +36,24 @@ export const classifyIssue = async (issueDescription, location = '') => {
  * @param {number} latitude - Latitude coordinate (optional)
  * @param {number} longitude - Longitude coordinate (optional)
  * @param {object} classification - Classification result
+ * @param {string} complaintLanguage - Target language for the generated complaint
  * @returns {Promise} Generated complaint with issue ID
  */
-export const generateComplaint = async (issueDescription, location = '', latitude = null, longitude = null, classification) => {
+export const generateComplaint = async (
+  issueDescription,
+  location = '',
+  latitude = null,
+  longitude = null,
+  classification,
+  complaintLanguage = 'English'
+) => {
   try {
     const response = await api.post('/generate', {
       issueDescription,
       location,
       latitude,
       longitude,
+      complaintLanguage,
       classification,
     });
     return response.data;

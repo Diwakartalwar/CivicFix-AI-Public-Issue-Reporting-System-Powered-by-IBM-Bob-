@@ -37,11 +37,12 @@ IMPORTANT: Respond with ONLY a JSON object, no other text. Use this exact format
 Do not include any markdown formatting, code blocks, or explanatory text. Just the JSON object."""
 
 
-def get_generation_prompt(issue_description, location, category, severity, urgency):
+def get_generation_prompt(issue_description, location, category, severity, urgency, language='English'):
     """
     Generate prompt for creating formal complaint
     """
     location_text = f"Location: {location}" if location else "Location: [Please specify]"
+    target_language = language or 'English'
     
     return f"""You are an expert in writing formal government complaints.
 
@@ -52,6 +53,7 @@ Issue: {issue_description}
 Category: {category}
 Severity: {severity}
 Urgency: {urgency}
+Target language: {target_language}
 
 The complaint should:
 1. Use formal government correspondence format
@@ -62,6 +64,7 @@ The complaint should:
 6. Use respectful, professional language
 7. Be concise but comprehensive (200-300 words)
 8. Include proper closing
+9. Write the complete complaint in {target_language}. Keep official department names understandable and do not add facts that were not provided.
 
 Generate the complete complaint letter now:"""
 
@@ -100,6 +103,7 @@ Enhance the complaint by applying the above improvements while:
 3. Ensuring all details remain accurate
 4. Preserving the respectful tone
 5. Making it more likely to receive prompt attention
+6. Preserving the original complaint language unless the user explicitly asked otherwise
 
 Generate the improved complaint now:"""
 
