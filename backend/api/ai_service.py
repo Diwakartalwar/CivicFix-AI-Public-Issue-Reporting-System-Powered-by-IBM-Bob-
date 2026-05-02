@@ -76,10 +76,14 @@ class GeminiService:
             dict: Classification results
         """
         try:
-            response_text = self.generate_text(prompt, max_tokens=300, temperature=0.3)
+            response_text = self.generate_text(prompt, max_tokens=500, temperature=0.3)
+            logger.info(f"Raw classification response: {response_text[:200]}")
             
             # Try to extract JSON from response
-            # Sometimes the model includes extra text, so we need to find the JSON part
+            # Remove markdown code blocks if present
+            response_text = response_text.replace('```json', '').replace('```', '').strip()
+            
+            # Find JSON object
             json_start = response_text.find('{')
             json_end = response_text.rfind('}') + 1
             
@@ -87,23 +91,27 @@ class GeminiService:
                 json_text = response_text[json_start:json_end]
                 classification = json.loads(json_text)
                 
-                # Validate required fields
+                # Validate and normalize required fields
                 required_fields = ['category', 'severity', 'urgency', 'reasoning']
                 if all(field in classification for field in required_fields):
+                    # Normalize values
+                    classification['severity'] = classification['severity'].lower()
+                    classification['urgency'] = classification['urgency'].lower()
                     return classification
                 else:
-                    logger.warning("Classification response missing required fields")
+                    logger.warning(f"Classification response missing required fields. Got: {classification.keys()}")
                     return self._get_default_classification()
             else:
-                logger.warning("No valid JSON found in classification response")
+                logger.warning(f"No valid JSON found in classification response: {response_text[:200]}")
                 return self._get_default_classification()
                 
         except json.JSONDecodeError as e:
-            logger.error(f"Failed to parse classification JSON: {str(e)}")
+            logger.error(f"Failed to parse classification JSON: {str(e)}. Response: {response_text[:200]}")
             return self._get_default_classification()
         except Exception as e:
             logger.error(f"Error in classify_issue: {str(e)}")
-            raise
+            # Return default instead of raising to keep app working
+            return self._get_default_classification()
     
     def generate_complaint(self, prompt):
         """

@@ -26,13 +26,15 @@ Classify this issue into ONE of these categories:
 Assess severity level: low, medium, high, critical
 Determine urgency: low, medium, high, immediate
 
-Respond ONLY with valid JSON in this exact format:
+IMPORTANT: Respond with ONLY a JSON object, no other text. Use this exact format:
 {{
-  "category": "category_name",
-  "severity": "severity_level",
-  "urgency": "urgency_level",
-  "reasoning": "brief explanation"
-}}"""
+  "category": "Sanitation",
+  "severity": "high",
+  "urgency": "medium",
+  "reasoning": "brief explanation here"
+}}
+
+Do not include any markdown formatting, code blocks, or explanatory text. Just the JSON object."""
 
 
 def get_generation_prompt(issue_description, location, category, severity, urgency):

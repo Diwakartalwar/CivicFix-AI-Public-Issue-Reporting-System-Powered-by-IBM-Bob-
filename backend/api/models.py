@@ -27,15 +27,15 @@ class CivicIssue(models.Model):
     
     # Geolocation data (for map view)
     latitude = models.DecimalField(
-        max_digits=9,
-        decimal_places=6,
+        max_digits=20,
+        decimal_places=20,
         null=True,
         blank=True,
         help_text="Latitude coordinate"
     )
     longitude = models.DecimalField(
-        max_digits=9,
-        decimal_places=6,
+        max_digits=20,
+        decimal_places=20,
         null=True,
         blank=True,
         help_text="Longitude coordinate"

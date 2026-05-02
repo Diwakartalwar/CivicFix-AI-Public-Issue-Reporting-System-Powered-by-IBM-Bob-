@@ -24,15 +24,15 @@ class ClassifyIssueSerializer(serializers.Serializer):
     latitude = serializers.DecimalField(
         required=False,
         allow_null=True,
-        max_digits=9,
-        decimal_places=6,
+        max_digits=12,
+        decimal_places=8,
         help_text="Latitude coordinate (optional)"
     )
     longitude = serializers.DecimalField(
         required=False,
         allow_null=True,
-        max_digits=9,
-        decimal_places=6,
+        max_digits=12,
+        decimal_places=8,
         help_text="Longitude coordinate (optional)"
     )
 

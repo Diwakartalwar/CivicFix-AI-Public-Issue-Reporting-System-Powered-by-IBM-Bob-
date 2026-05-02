@@ -128,9 +128,15 @@ def generate_complaint(request):
     }
     """
     try:
+        # Log incoming request for debugging
+        logger.info(f"Received generate request with data keys: {request.data.keys()}")
+        logger.info(f"Issue description length: {len(request.data.get('issueDescription', ''))}")
+        logger.info(f"Has classification: {'classification' in request.data}")
+        
         # Validate request data
         serializer = GenerateComplaintSerializer(data=request.data)
         if not serializer.is_valid():
+            logger.error(f"Serializer validation failed: {serializer.errors}")
             return Response(
                 {"error": "Invalid request data", "detail": serializer.errors},
                 status=status.HTTP_400_BAD_REQUEST
