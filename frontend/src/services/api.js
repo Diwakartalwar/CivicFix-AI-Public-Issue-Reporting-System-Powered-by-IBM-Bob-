@@ -110,6 +110,21 @@ export const getIssueDetail = async (issueId) => {
 };
 
 /**
+ * Upvote an issue
+ * @param {number} issueId - Issue ID
+ * @returns {Promise} Updated vote count
+ */
+export const voteIssue = async (issueId) => {
+  try {
+    const response = await api.post(`/issues/${issueId}/vote`);
+    return response.data;
+  } catch (error) {
+    console.error('Error voting for issue:', error);
+    throw error;
+  }
+};
+
+/**
  * Get statistics about community issues
  * @returns {Promise} Statistics
  */

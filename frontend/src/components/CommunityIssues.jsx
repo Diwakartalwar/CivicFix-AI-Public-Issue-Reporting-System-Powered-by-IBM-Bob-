@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
 import { FiMap, FiList, FiFilter, FiSearch } from 'react-icons/fi';
-import { getCommunityIssues, getIssueClusters } from '../services/api';
+import { getCommunityIssues, getIssueClusters, voteIssue } from '../services/api';
 import { SEVERITY_COLORS, CATEGORY_ICONS } from '../utils/constants';
 import LoadingSpinner from './LoadingSpinner';
 import 'leaflet/dist/leaflet.css';
@@ -26,6 +26,7 @@ const CommunityIssues = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [showClusters, setShowClusters] = useState(true);
+  const [votingIssueIds, setVotingIssueIds] = useState(new Set());
   
   const [filters, setFilters] = useState({
     category: '',
@@ -102,6 +103,30 @@ const CommunityIssues = () => {
       status: '',
       search: ''
     });
+  };
+
+  const handleVote = async (issueId) => {
+    if (votingIssueIds.has(issueId)) return;
+
+    setVotingIssueIds(prev => new Set(prev).add(issueId));
+
+    try {
+      const result = await voteIssue(issueId);
+      setIssues(prev => prev.map(issue =>
+        issue.id === issueId
+          ? { ...issue, vote_count: result.vote_count }
+          : issue
+      ));
+    } catch (err) {
+      console.error('Error voting for issue:', err);
+      setError('Failed to submit vote. Please try again.');
+    } finally {
+      setVotingIssueIds(prev => {
+        const next = new Set(prev);
+        next.delete(issueId);
+        return next;
+      });
+    }
   };
 
   const getMarkerColor = (severity) => {
@@ -419,13 +444,14 @@ const CommunityIssues = () => {
                             ✓ Verified
                           </span>
                         )}
-                        {issue.escalation_level !== 'ward' && (
+                        {issue.escalation_level && issue.escalation_level !== 'ward' && (
                           <span className="px-2 py-1 rounded bg-red-100 text-red-800 flex items-center gap-1">
                             ⚠️ {issue.escalation_level.toUpperCase()}
                           </span>
                         )}
                         <button
-                          onClick={() => {/* vote logic */}}
+                          onClick={() => handleVote(issue.id)}
+                          disabled={votingIssueIds.has(issue.id)}
                           className="px-2 py-1 rounded bg-blue-50 text-blue-700 hover:bg-blue-100 flex items-center gap-1"
                         >
                           👍 {issue.vote_count || 0}

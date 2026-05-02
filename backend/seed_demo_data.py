@@ -1,13 +1,14 @@
 import os
 import sys
 import django
-from datetime import datetime, timedelta
+from datetime import timedelta
 import random
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'civicfix_api.settings')
 sys.path.insert(0, os.path.dirname(__file__))
 django.setup()
 
+from django.utils import timezone
 from api.models import CivicIssue
 
 # Indian cities with coordinates
@@ -102,7 +103,7 @@ for i, issue in enumerate(DEMO_ISSUES):
     city = random.choice(cities)
     lat, lng = generate_coordinates(city)
     days_ago = random.randint(1, 30)
-    created = datetime.now() - timedelta(days=days_ago)
+    created = timezone.now() - timedelta(days=days_ago)
     
     status = random.choices(statuses, weights=status_weights)[0]
     
@@ -137,6 +138,10 @@ for i, issue in enumerate(DEMO_ISSUES):
     obj.latitude = lat
     obj.longitude = lng
     obj.save()
+    CivicIssue.objects.filter(id=obj.id).update(
+        created_at=created,
+        updated_at=created
+    )
     print(f"Created issue {i+1}/{len(DEMO_ISSUES)}: {issue['desc'][:50]}...")
 
 print(f"\nSuccessfully seeded {len(DEMO_ISSUES)} demo issues!")

@@ -28,7 +28,10 @@ def cluster_issues(issues, radius_meters=500):
         return []
     
     # Filter issues with coordinates
-    valid_issues = [i for i in issues if i.latitude and i.longitude]
+    valid_issues = [
+        i for i in issues
+        if i.latitude is not None and i.longitude is not None
+    ]
     if not valid_issues:
         return []
     
@@ -79,7 +82,7 @@ def get_heatmap_data(issues):
     heatmap_data = []
     
     for issue in issues:
-        if issue.latitude and issue.longitude:
+        if issue.latitude is not None and issue.longitude is not None:
             # Intensity based on severity
             intensity_map = {
                 'low': 0.3,

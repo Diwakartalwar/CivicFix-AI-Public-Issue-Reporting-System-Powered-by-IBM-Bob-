@@ -11,6 +11,14 @@ const DashboardPage = () => {
   const [error, setError] = useState(null);
   const [timeRange, setTimeRange] = useState('all'); // all, week, month
 
+  const escapeCSVValue = (value) => {
+    const stringValue = value == null ? '' : String(value);
+    if (/[",\n\r]/.test(stringValue)) {
+      return `"${stringValue.replace(/"/g, '""')}"`;
+    }
+    return stringValue;
+  };
+
   useEffect(() => {
     fetchDashboardData();
   }, []);
@@ -46,8 +54,8 @@ const DashboardPage = () => {
     ]);
 
     const csvContent = [
-      headers.join(','),
-      ...rows.map(row => row.join(','))
+      headers.map(escapeCSVValue).join(','),
+      ...rows.map(row => row.map(escapeCSVValue).join(','))
     ].join('\n');
 
     const blob = new Blob([csvContent], { type: 'text/csv' });

@@ -165,6 +165,8 @@ def generate_complaint(request):
         urgency = classification.get('urgency', 'medium')
         reasoning = classification.get('reasoning', '')
         authority = classification.get('authority', {})
+        if not isinstance(authority, dict):
+            authority = {}
         
         # Generate complaint prompt
         prompt = get_generation_prompt(
@@ -288,12 +290,12 @@ def verify_issue(request, issue_id):
         score = 0
         
         # Has GPS coordinates (+20)
-        if issue.latitude and issue.longitude:
+        if issue.latitude is not None and issue.longitude is not None:
             score += 20
             # Check nearby similar issues (+30)
             nearby = CivicIssue.objects.filter(category=issue.category).exclude(id=issue.id)
             for other in nearby:
-                if other.latitude and other.longitude:
+                if other.latitude is not None and other.longitude is not None:
                     dist = haversine_distance(issue.latitude, issue.longitude, other.latitude, other.longitude)
                     if dist < 1000:  # Within 1km
                         score += 30
@@ -315,6 +317,8 @@ def verify_issue(request, issue_id):
             "verification_score": issue.verification_score,
             "is_verified": issue.is_verified
         }, status=status.HTTP_200_OK)
+    except CivicIssue.DoesNotExist:
+        return Response({"error": "Issue not found"}, status=status.HTTP_404_NOT_FOUND)
     except Exception as e:
         return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
@@ -350,6 +354,8 @@ def check_escalation(request, issue_id):
             "escalation_level": issue.escalation_level,
             "escalated": should_escalate
         }, status=status.HTTP_200_OK)
+    except CivicIssue.DoesNotExist:
+        return Response({"error": "Issue not found"}, status=status.HTTP_404_NOT_FOUND)
     except Exception as e:
         return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 

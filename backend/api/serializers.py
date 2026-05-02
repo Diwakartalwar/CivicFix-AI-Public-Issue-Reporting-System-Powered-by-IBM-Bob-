@@ -125,6 +125,11 @@ class CivicIssueSerializer(serializers.ModelSerializer):
             'created_at',
             'updated_at',
             'view_count',
+            'vote_count',
+            'verification_score',
+            'is_verified',
+            'escalation_level',
+            'escalated_at',
             'age_in_days',
             'has_location_coordinates'
         ]
