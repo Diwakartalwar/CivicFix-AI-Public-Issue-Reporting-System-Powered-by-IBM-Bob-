@@ -1,92 +1,64 @@
 """
-IBM watsonx.ai Integration Service
+OpenAI Integration Service
 Handles all AI model interactions for classification, generation, and improvement
 """
 
 import os
 import json
 import logging
-from ibm_watsonx_ai.foundation_models import Model
-from ibm_watsonx_ai.metanames import GenTextParamsMetaNames as GenParams
+from openai import OpenAI
 from django.conf import settings
 
 logger = logging.getLogger(__name__)
 
 
-class WatsonXAIService:
+class OpenAIService:
     """
-    Service class for interacting with IBM watsonx.ai
+    Service class for interacting with OpenAI API
     """
     
     def __init__(self):
-        """Initialize the watsonx.ai model"""
-        self.api_key = settings.WATSONX_API_KEY
-        self.project_id = settings.WATSONX_PROJECT_ID
-        self.url = settings.WATSONX_URL
-        self.model_id = settings.WATSONX_MODEL_ID
+        """Initialize the OpenAI client"""
+        self.api_key = settings.OPENAI_API_KEY
+        self.model = settings.OPENAI_MODEL
         
-        if not self.api_key or not self.project_id:
-            raise ValueError("WATSONX_API_KEY and WATSONX_PROJECT_ID must be set in environment variables")
+        if not self.api_key:
+            raise ValueError("OPENAI_API_KEY must be set in environment variables")
         
-        # Model parameters for text generation
-        self.parameters = {
-            GenParams.DECODING_METHOD: "greedy",
-            GenParams.MAX_NEW_TOKENS: 500,
-            GenParams.MIN_NEW_TOKENS: 50,
-            GenParams.TEMPERATURE: 0.7,
-            GenParams.TOP_K: 50,
-            GenParams.TOP_P: 1
-        }
-        
-        # Initialize the model
+        # Initialize OpenAI client
         try:
-            self.model = Model(
-                model_id=self.model_id,
-                params=self.parameters,
-                credentials={
-                    "apikey": self.api_key,
-                    "url": self.url
-                },
-                project_id=self.project_id
-            )
-            logger.info(f"Successfully initialized watsonx.ai model: {self.model_id}")
+            self.client = OpenAI(api_key=self.api_key)
+            logger.info(f"Successfully initialized OpenAI with model: {self.model}")
         except Exception as e:
-            logger.error(f"Failed to initialize watsonx.ai model: {str(e)}")
+            logger.error(f"Failed to initialize OpenAI: {str(e)}")
             raise
     
-    def generate_text(self, prompt, max_tokens=500):
+    def generate_text(self, prompt, max_tokens=500, temperature=0.7):
         """
-        Generate text using the watsonx.ai model
+        Generate text using OpenAI
         
         Args:
             prompt (str): The input prompt
             max_tokens (int): Maximum number of tokens to generate
+            temperature (float): Sampling temperature (0-2)
             
         Returns:
             str: Generated text
         """
         try:
-            # Update max tokens if different from default
-            if max_tokens != 500:
-                params = self.parameters.copy()
-                params[GenParams.MAX_NEW_TOKENS] = max_tokens
-                
-                # Create temporary model with updated params
-                temp_model = Model(
-                    model_id=self.model_id,
-                    params=params,
-                    credentials={
-                        "apikey": self.api_key,
-                        "url": self.url
-                    },
-                    project_id=self.project_id
-                )
-                response = temp_model.generate_text(prompt=prompt)
-            else:
-                response = self.model.generate_text(prompt=prompt)
+            response = self.client.chat.completions.create(
+                model=self.model,
+                messages=[
+                    {"role": "system", "content": "You are a helpful assistant for civic issue management."},
+                    {"role": "user", "content": prompt}
+                ],
+                max_tokens=max_tokens,
+                temperature=temperature
+            )
             
-            logger.info("Successfully generated text from watsonx.ai")
-            return response.strip()
+            generated_text = response.choices[0].message.content.strip()
+            logger.info("Successfully generated text from OpenAI")
+            return generated_text
             
         except Exception as e:
             logger.error(f"Error generating text: {str(e)}")
@@ -103,7 +75,7 @@ class WatsonXAIService:
             dict: Classification results
         """
         try:
-            response_text = self.generate_text(prompt, max_tokens=300)
+            response_text = self.generate_text(prompt, max_tokens=300, temperature=0.3)
             
             # Try to extract JSON from response
             # Sometimes the model includes extra text, so we need to find the JSON part
@@ -143,7 +115,7 @@ class WatsonXAIService:
             str: Formatted complaint text
         """
         try:
-            complaint = self.generate_text(prompt, max_tokens=600)
+            complaint = self.generate_text(prompt, max_tokens=800, temperature=0.7)
             return complaint
         except Exception as e:
             logger.error(f"Error in generate_complaint: {str(e)}")
@@ -160,7 +132,7 @@ class WatsonXAIService:
             str: Improved complaint text
         """
         try:
-            improved_complaint = self.generate_text(prompt, max_tokens=700)
+            improved_complaint = self.generate_text(prompt, max_tokens=1000, temperature=0.7)
             return improved_complaint
         except Exception as e:
             logger.error(f"Error in improve_complaint: {str(e)}")
@@ -187,7 +159,7 @@ def get_ai_service():
     """
     global _ai_service
     if _ai_service is None:
-        _ai_service = WatsonXAIService()
+        _ai_service = OpenAIService()
     return _ai_service
 
 # Made with Bob

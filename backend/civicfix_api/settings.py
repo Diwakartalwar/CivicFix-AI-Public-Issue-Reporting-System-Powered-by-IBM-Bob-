@@ -146,8 +146,6 @@ REST_FRAMEWORK = {
     ],
 }
 
-# IBM watsonx.ai Configuration
-WATSONX_API_KEY = os.getenv('WATSONX_API_KEY')
-WATSONX_PROJECT_ID = os.getenv('WATSONX_PROJECT_ID')
-WATSONX_URL = os.getenv('WATSONX_URL', 'https://us-south.ml.cloud.ibm.com')
-WATSONX_MODEL_ID = os.getenv('WATSONX_MODEL_ID', 'google/flan-t5-xl')
+# OpenAI Configuration
+OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')
+OPENAI_MODEL = os.getenv('OPENAI_MODEL', 'gpt-4o-mini')  # Cost-effective model, or use 'gpt-4' for better quality
