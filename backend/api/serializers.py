@@ -4,6 +4,7 @@ Handles request/response data validation and serialization
 """
 
 from rest_framework import serializers
+from .models import CivicIssue
 
 
 class ClassifyIssueSerializer(serializers.Serializer):
@@ -19,6 +20,20 @@ class ClassifyIssueSerializer(serializers.Serializer):
         allow_blank=True,
         max_length=500,
         help_text="Location of the issue (optional)"
+    )
+    latitude = serializers.DecimalField(
+        required=False,
+        allow_null=True,
+        max_digits=9,
+        decimal_places=6,
+        help_text="Latitude coordinate (optional)"
+    )
+    longitude = serializers.DecimalField(
+        required=False,
+        allow_null=True,
+        max_digits=9,
+        decimal_places=6,
+        help_text="Longitude coordinate (optional)"
     )
 
 
@@ -43,12 +58,25 @@ class GenerateComplaintSerializer(serializers.Serializer):
         allow_blank=True,
         max_length=500
     )
+    latitude = serializers.DecimalField(
+        required=False,
+        allow_null=True,
+        max_digits=9,
+        decimal_places=6
+    )
+    longitude = serializers.DecimalField(
+        required=False,
+        allow_null=True,
+        max_digits=9,
+        decimal_places=6
+    )
     classification = serializers.DictField(required=True)
 
 
 class ComplaintResponseSerializer(serializers.Serializer):
     """Serializer for complaint generation response"""
     formattedComplaint = serializers.CharField()
+    issueId = serializers.IntegerField()
 
 
 class ImproveComplaintSerializer(serializers.Serializer):
@@ -70,6 +98,62 @@ class ImproveComplaintSerializer(serializers.Serializer):
 class ImprovedComplaintResponseSerializer(serializers.Serializer):
     """Serializer for improved complaint response"""
     improvedComplaint = serializers.CharField()
+
+
+class CivicIssueSerializer(serializers.ModelSerializer):
+    """Serializer for CivicIssue model"""
+    age_in_days = serializers.ReadOnlyField()
+    has_location_coordinates = serializers.ReadOnlyField()
+    
+    class Meta:
+        model = CivicIssue
+        fields = [
+            'id',
+            'issue_description',
+            'location',
+            'latitude',
+            'longitude',
+            'category',
+            'severity',
+            'urgency',
+            'reasoning',
+            'formatted_complaint',
+            'authority_department',
+            'authority_jurisdiction',
+            'authority_contact',
+            'status',
+            'created_at',
+            'updated_at',
+            'view_count',
+            'age_in_days',
+            'has_location_coordinates'
+        ]
+        read_only_fields = ['id', 'created_at', 'updated_at', 'view_count']
+
+
+class CivicIssueListSerializer(serializers.ModelSerializer):
+    """Lightweight serializer for listing issues"""
+    age_in_days = serializers.ReadOnlyField()
+    has_location_coordinates = serializers.ReadOnlyField()
+    
+    class Meta:
+        model = CivicIssue
+        fields = [
+            'id',
+            'issue_description',
+            'location',
+            'latitude',
+            'longitude',
+            'category',
+            'severity',
+            'urgency',
+            'authority_department',
+            'status',
+            'created_at',
+            'view_count',
+            'age_in_days',
+            'has_location_coordinates'
+        ]
 
 
 class ErrorResponseSerializer(serializers.Serializer):

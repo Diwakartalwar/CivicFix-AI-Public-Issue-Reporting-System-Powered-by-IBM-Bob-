@@ -33,14 +33,18 @@ export const classifyIssue = async (issueDescription, location = '') => {
  * Generate a formal complaint
  * @param {string} issueDescription - Description of the issue
  * @param {string} location - Location of the issue (optional)
+ * @param {number} latitude - Latitude coordinate (optional)
+ * @param {number} longitude - Longitude coordinate (optional)
  * @param {object} classification - Classification result
- * @returns {Promise} Generated complaint
+ * @returns {Promise} Generated complaint with issue ID
  */
-export const generateComplaint = async (issueDescription, location = '', classification) => {
+export const generateComplaint = async (issueDescription, location = '', latitude = null, longitude = null, classification) => {
   try {
     const response = await api.post('/generate', {
       issueDescription,
       location,
+      latitude,
+      longitude,
       classification,
     });
     return response.data;
@@ -65,6 +69,56 @@ export const improveComplaint = async (complaint, improvementTypes) => {
     return response.data;
   } catch (error) {
     console.error('Error improving complaint:', error);
+    throw error;
+  }
+};
+
+/**
+ * Get all community issues with optional filtering
+ * @param {object} filters - Filter parameters (category, severity, status, search)
+ * @returns {Promise} List of issues
+ */
+export const getCommunityIssues = async (filters = {}) => {
+  try {
+    const params = new URLSearchParams();
+    if (filters.category) params.append('category', filters.category);
+    if (filters.severity) params.append('severity', filters.severity);
+    if (filters.status) params.append('status', filters.status);
+    if (filters.search) params.append('search', filters.search);
+    
+    const response = await api.get(`/issues?${params.toString()}`);
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching community issues:', error);
+    throw error;
+  }
+};
+
+/**
+ * Get detailed information about a specific issue
+ * @param {number} issueId - Issue ID
+ * @returns {Promise} Issue details
+ */
+export const getIssueDetail = async (issueId) => {
+  try {
+    const response = await api.get(`/issues/${issueId}`);
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching issue detail:', error);
+    throw error;
+  }
+};
+
+/**
+ * Get statistics about community issues
+ * @returns {Promise} Statistics
+ */
+export const getIssueStats = async () => {
+  try {
+    const response = await api.get('/issues/stats');
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching issue stats:', error);
     throw error;
   }
 };

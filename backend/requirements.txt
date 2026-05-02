@@ -3,9 +3,8 @@ Django==4.2.7
 djangorestframework==3.14.0
 django-cors-headers==4.3.1
 
-# IBM watsonx.ai
-ibm-watsonx-ai==0.2.6
-ibm-watson-machine-learning==1.0.335
+# IBM watsonx.ai (let pip resolve compatible versions)
+ibm-watsonx-ai>=0.2.6
 
 # Environment and Configuration
 python-dotenv==1.0.0

@@ -1,9 +1,12 @@
 import React, { useState } from 'react';
-import { FiSend } from 'react-icons/fi';
+import { FiSend, FiMapPin } from 'react-icons/fi';
 
 const IssueForm = ({ onSubmit, loading }) => {
   const [issueDescription, setIssueDescription] = useState('');
   const [location, setLocation] = useState('');
+  const [latitude, setLatitude] = useState(null);
+  const [longitude, setLongitude] = useState(null);
+  const [gettingLocation, setGettingLocation] = useState(false);
   const [errors, setErrors] = useState({});
 
   const validateForm = () => {
@@ -19,13 +22,38 @@ const IssueForm = ({ onSubmit, loading }) => {
     return Object.keys(newErrors).length === 0;
   };
 
+  const getCurrentLocation = () => {
+    if (!navigator.geolocation) {
+      alert('Geolocation is not supported by your browser');
+      return;
+    }
+
+    setGettingLocation(true);
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        setLatitude(position.coords.latitude);
+        setLongitude(position.coords.longitude);
+        setGettingLocation(false);
+        // Optionally, you can use reverse geocoding here to get address
+        alert(`Location captured: ${position.coords.latitude.toFixed(6)}, ${position.coords.longitude.toFixed(6)}`);
+      },
+      (error) => {
+        console.error('Error getting location:', error);
+        alert('Unable to get your location. Please enter it manually.');
+        setGettingLocation(false);
+      }
+    );
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
     
     if (validateForm()) {
       onSubmit({
         issueDescription: issueDescription.trim(),
-        location: location.trim()
+        location: location.trim(),
+        latitude,
+        longitude
       });
     }
   };
@@ -69,23 +97,45 @@ const IssueForm = ({ onSubmit, loading }) => {
 
         {/* Location */}
         <div>
-          <label 
-            htmlFor="location" 
+          <label
+            htmlFor="location"
             className="block text-sm font-medium text-gray-700 mb-2"
           >
             Location <span className="text-gray-400">(Optional)</span>
           </label>
-          <input
-            id="location"
-            type="text"
-            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
-            placeholder="Enter the location (e.g., Main Street, Ward 5)"
-            value={location}
-            onChange={(e) => setLocation(e.target.value)}
-            disabled={loading}
-          />
+          <div className="flex gap-2">
+            <input
+              id="location"
+              type="text"
+              className="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+              placeholder="Enter the location (e.g., Main Street, Ward 5)"
+              value={location}
+              onChange={(e) => setLocation(e.target.value)}
+              disabled={loading}
+            />
+            <button
+              type="button"
+              onClick={getCurrentLocation}
+              disabled={loading || gettingLocation}
+              className={`px-4 py-3 rounded-lg font-medium transition-colors flex items-center gap-2 ${
+                gettingLocation
+                  ? 'bg-gray-400 cursor-not-allowed text-white'
+                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+              }`}
+              title="Get current location"
+            >
+              <FiMapPin className="w-5 h-5" />
+              {gettingLocation ? 'Getting...' : 'Use GPS'}
+            </button>
+          </div>
           <p className="mt-1 text-sm text-gray-500">
-            Providing a location helps authorities respond faster
+            {latitude && longitude ? (
+              <span className="text-green-600">
+                ✓ GPS coordinates captured ({latitude.toFixed(6)}, {longitude.toFixed(6)})
+              </span>
+            ) : (
+              'Providing a location helps authorities respond faster and shows your issue on the community map'
+            )}
           </p>
         </div>
 
