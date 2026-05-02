@@ -26,20 +26,9 @@ class CivicIssue(models.Model):
     )
     
     # Geolocation data (for map view)
-    latitude = models.DecimalField(
-        max_digits=20,
-        decimal_places=20,
-        null=True,
-        blank=True,
-        help_text="Latitude coordinate"
-    )
-    longitude = models.DecimalField(
-        max_digits=20,
-        decimal_places=20,
-        null=True,
-        blank=True,
-        help_text="Longitude coordinate"
-    )
+    latitude = models.FloatField(null=True, blank=True,help_text="Latitude coordinate (optional)")
+    longitude = models.FloatField(null=True, blank=True,help_text="Longitude coordinate (optional)")
+
     
     # AI Classification Results
     category = models.CharField(

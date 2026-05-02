@@ -264,6 +264,57 @@ def improve_complaint(request):
             status=status.HTTP_500_INTERNAL_SERVER_ERROR
         )
 
+@api_view(['GET'])
+def get_issue_clusters(request):
+    """
+    Get clustered issues for map visualization
+    
+    GET /api/clusters?radius=500
+    
+    Query Parameters:
+    - radius: Clustering radius in meters (default: 500)
+    """
+    from .clustering import cluster_issues
+    from .models import CivicIssue
+    
+    try:
+        radius = int(request.GET.get('radius', 500))
+        issues = CivicIssue.objects.all()
+        clusters = cluster_issues(issues, radius)
+        
+        return Response(clusters, status=status.HTTP_200_OK)
+    except Exception as e:
+        logger.error(f"Error in get_issue_clusters: {str(e)}")
+        return Response(
+            {"error": "Failed to cluster issues", "detail": str(e)},
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR
+        )
+
+
+@api_view(['GET'])
+def get_heatmap_data(request):
+    """
+    Get heatmap data for visualization
+    
+    GET /api/heatmap
+    
+    Returns array of [lat, lng, intensity] for heatmap layer
+    """
+    from .clustering import get_heatmap_data
+    from .models import CivicIssue
+    
+    try:
+        issues = CivicIssue.objects.all()
+        heatmap_data = get_heatmap_data(issues)
+        
+        return Response(heatmap_data, status=status.HTTP_200_OK)
+    except Exception as e:
+        logger.error(f"Error in get_heatmap_data: {str(e)}")
+        return Response(
+            {"error": "Failed to generate heatmap data", "detail": str(e)},
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR
+        )
+
 
 @api_view(['GET'])
 def get_community_issues(request):

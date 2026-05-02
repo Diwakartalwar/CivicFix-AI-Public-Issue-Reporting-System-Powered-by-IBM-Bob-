@@ -2,6 +2,7 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Link, useLocation } from 'react-router-dom';
 import HomePage from './pages/HomePage';
 import CommunityIssues from './components/CommunityIssues';
+import DashboardPage from './pages/DashboardPage';
 import './App.css';
 
 function App() {
@@ -14,6 +15,7 @@ function App() {
           <Routes>
             <Route path="/" element={<HomePage />} />
             <Route path="/community" element={<CommunityIssues />} />
+            <Route path="/dashboard" element={<DashboardPage />} />
           </Routes>
         </main>
 
@@ -63,6 +65,16 @@ function Header() {
               }`}
             >
               Community Issues
+            </Link>
+            <Link
+              to="/dashboard"
+              className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+                location.pathname === '/dashboard'
+                  ? 'bg-primary text-white'
+                  : 'text-gray-700 hover:bg-gray-100'
+              }`}
+            >
+              Dashboard
             </Link>
           </nav>
         </div>

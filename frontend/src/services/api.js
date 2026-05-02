@@ -122,7 +122,34 @@ export const getIssueStats = async () => {
     throw error;
   }
 };
+/**
+ * Get clustered issues for map visualization
+ * @param {number} radius - Clustering radius in meters (default: 500)
+ * @returns {Promise} Clustered issues
+ */
+export const getIssueClusters = async (radius = 500) => {
+  try {
+    const response = await api.get(`/clusters?radius=${radius}`);
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching issue clusters:', error);
+    throw error;
+  }
+};
 
+/**
+ * Get heatmap data for visualization
+ * @returns {Promise} Heatmap data points
+ */
+export const getHeatmapData = async () => {
+  try {
+    const response = await api.get('/heatmap');
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching heatmap data:', error);
+    throw error;
+  }
+};
 /**
  * Health check
  * @returns {Promise} Health status
