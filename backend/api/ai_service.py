@@ -27,6 +27,16 @@ class WatsonxService:
             raise ValueError("WATSONX_API_KEY must be set in environment variables")
         if not self.project_id and not self.space_id:
             raise ValueError("WATSONX_PROJECT_ID or WATSONX_SPACE_ID must be set in environment variables")
+        if self.project_id and self.project_id.startswith("ApiKey-"):
+            raise ValueError(
+                "WATSONX_PROJECT_ID appears to contain an IBM Cloud API key. "
+                "Put the ApiKey-* value in WATSONX_API_KEY, and put your watsonx.ai project GUID in WATSONX_PROJECT_ID."
+            )
+        if self.space_id and self.space_id.startswith("ApiKey-"):
+            raise ValueError(
+                "WATSONX_SPACE_ID appears to contain an IBM Cloud API key. "
+                "Put the ApiKey-* value in WATSONX_API_KEY, and put your watsonx.ai space GUID in WATSONX_SPACE_ID."
+            )
         
         # Import lazily so Django checks can still run before dependencies are installed.
         try:
