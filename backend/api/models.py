@@ -89,6 +89,33 @@ class CivicIssue(models.Model):
         default=0,
         help_text="Number of times this issue was viewed"
     )
+    vote_count = models.IntegerField(
+        default=0,
+        help_text="Number of upvotes from community"
+    )
+    
+    # Verification system
+    verification_score = models.IntegerField(
+        default=0,
+        help_text="Trust score 0-100 based on multiple factors"
+    )
+    is_verified = models.BooleanField(
+        default=False,
+        help_text="Whether issue is verified as legitimate"
+    )
+    
+    # Escalation system
+    escalation_level = models.CharField(
+        max_length=20,
+        default='ward',
+        choices=[('ward', 'Ward'), ('city', 'City'), ('emergency', 'Emergency')],
+        help_text="Current escalation level"
+    )
+    escalated_at = models.DateTimeField(
+        null=True,
+        blank=True,
+        help_text="When issue was escalated"
+    )
     
     class Meta:
         ordering = ['-created_at']

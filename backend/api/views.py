@@ -264,6 +264,94 @@ def improve_complaint(request):
             status=status.HTTP_500_INTERNAL_SERVER_ERROR
         )
 
+@api_view(['POST'])
+def vote_issue(request, issue_id):
+    """Vote/upvote an issue"""
+    try:
+        issue = CivicIssue.objects.get(id=issue_id)
+        issue.vote_count += 1
+        issue.save(update_fields=['vote_count'])
+        return Response({"vote_count": issue.vote_count}, status=status.HTTP_200_OK)
+    except CivicIssue.DoesNotExist:
+        return Response({"error": "Issue not found"}, status=status.HTTP_404_NOT_FOUND)
+    except Exception as e:
+        return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+@api_view(['POST'])
+def verify_issue(request, issue_id):
+    """Calculate and update verification score"""
+    from .clustering import haversine_distance
+    try:
+        issue = CivicIssue.objects.get(id=issue_id)
+        score = 0
+        
+        # Has GPS coordinates (+20)
+        if issue.latitude and issue.longitude:
+            score += 20
+            # Check nearby similar issues (+30)
+            nearby = CivicIssue.objects.filter(category=issue.category).exclude(id=issue.id)
+            for other in nearby:
+                if other.latitude and other.longitude:
+                    dist = haversine_distance(issue.latitude, issue.longitude, other.latitude, other.longitude)
+                    if dist < 1000:  # Within 1km
+                        score += 30
+                        break
+        
+        # High severity (+20)
+        if issue.severity in ['high', 'critical']:
+            score += 20
+        
+        # Age factor (+30 if recent)
+        if issue.age_in_days < 7:
+            score += 30
+        
+        issue.verification_score = min(score, 100)
+        issue.is_verified = score >= 50
+        issue.save(update_fields=['verification_score', 'is_verified'])
+        
+        return Response({
+            "verification_score": issue.verification_score,
+            "is_verified": issue.is_verified
+        }, status=status.HTTP_200_OK)
+    except Exception as e:
+        return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+@api_view(['POST'])
+def check_escalation(request, issue_id):
+    """Check and update escalation level"""
+    try:
+        issue = CivicIssue.objects.get(id=issue_id)
+        
+        # Escalation logic
+        if issue.status == 'resolved':
+            return Response({"message": "Issue already resolved"}, status=status.HTTP_200_OK)
+        
+        should_escalate = False
+        new_level = issue.escalation_level
+        
+        # Emergency: critical + high votes
+        if issue.severity == 'critical' and issue.vote_count > 20:
+            new_level = 'emergency'
+            should_escalate = True
+        # City: pending >7 days or high severity + votes
+        elif issue.age_in_days > 7 or (issue.severity == 'high' and issue.vote_count > 10):
+            new_level = 'city' if issue.escalation_level == 'ward' else issue.escalation_level
+            should_escalate = new_level != issue.escalation_level
+        
+        if should_escalate:
+            issue.escalation_level = new_level
+            issue.escalated_at = timezone.now()
+            issue.save(update_fields=['escalation_level', 'escalated_at'])
+        
+        return Response({
+            "escalation_level": issue.escalation_level,
+            "escalated": should_escalate
+        }, status=status.HTTP_200_OK)
+    except Exception as e:
+        return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
 @api_view(['GET'])
 def get_issue_clusters(request):
     """

@@ -368,7 +368,7 @@ const CommunityIssues = () => {
                         </span>
                       </div>
                       <p className="text-gray-700 mb-3">{issue.issue_description}</p>
-                      <div className="flex items-center gap-4 text-sm text-gray-600">
+                      <div className="flex items-center gap-4 text-sm text-gray-600 flex-wrap">
                         <span>📍 {issue.location || 'No location specified'}</span>
                         <span>📅 {new Date(issue.created_at).toLocaleDateString()}</span>
                         <span className={`px-2 py-1 rounded ${
@@ -378,6 +378,22 @@ const CommunityIssues = () => {
                         }`}>
                           {issue.status.replace('_', ' ')}
                         </span>
+                        {issue.is_verified && (
+                          <span className="px-2 py-1 rounded bg-green-100 text-green-800 flex items-center gap-1">
+                            ✓ Verified
+                          </span>
+                        )}
+                        {issue.escalation_level !== 'ward' && (
+                          <span className="px-2 py-1 rounded bg-red-100 text-red-800 flex items-center gap-1">
+                            ⚠️ {issue.escalation_level.toUpperCase()}
+                          </span>
+                        )}
+                        <button
+                          onClick={() => {/* vote logic */}}
+                          className="px-2 py-1 rounded bg-blue-50 text-blue-700 hover:bg-blue-100 flex items-center gap-1"
+                        >
+                          👍 {issue.vote_count || 0}
+                        </button>
                       </div>
                     </div>
                   </div>

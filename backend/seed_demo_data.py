@@ -106,6 +106,14 @@ for i, issue in enumerate(DEMO_ISSUES):
     
     status = random.choices(statuses, weights=status_weights)[0]
     
+    # Calculate verification score
+    verification_score = 20  # Has GPS
+    if issue['sev'] in ['high', 'critical']:
+        verification_score += 20
+    if days_ago < 7:
+        verification_score += 30
+    verification_score += random.randint(0, 30)  # Nearby issues simulation
+    
     obj = CivicIssue(
         issue_description=issue['desc'],
         location=f"{issue['loc']}, {city}",
@@ -120,7 +128,11 @@ for i, issue in enumerate(DEMO_ISSUES):
         status=status,
         created_at=created,
         updated_at=created,
-        view_count=random.randint(5, 50)
+        view_count=random.randint(5, 50),
+        vote_count=random.randint(0, 25),
+        verification_score=min(verification_score, 100),
+        is_verified=verification_score >= 50,
+        escalation_level='city' if (days_ago > 7 or issue['sev'] == 'critical') else 'ward'
     )
     obj.latitude = lat
     obj.longitude = lng
