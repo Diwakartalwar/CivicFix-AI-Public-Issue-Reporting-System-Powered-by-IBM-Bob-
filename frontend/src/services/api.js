@@ -7,7 +7,7 @@ const api = axios.create({
   headers: {
     'Content-Type': 'application/json',
   },
-  timeout: 30000, // 30 seconds timeout
+  timeout: 120000, // watsonx.ai responses can take longer on first generation
 });
 
 /**
@@ -56,7 +56,17 @@ export const generateComplaint = async (
       complaintLanguage,
       classification,
     });
-    return response.data;
+    const formattedComplaint =
+      response.data?.formattedComplaint ||
+      response.data?.formatted_complaint ||
+      response.data?.complaint ||
+      response.data?.generatedComplaint ||
+      '';
+
+    return {
+      ...response.data,
+      formattedComplaint,
+    };
   } catch (error) {
     console.error('Error generating complaint:', error);
     throw error;

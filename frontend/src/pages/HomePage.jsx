@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import IssueForm from '../components/IssueForm';
 import ClassificationCard from '../components/ClassificationCard';
 import ComplaintDisplay from '../components/ComplaintDisplay';
@@ -14,12 +14,28 @@ function HomePage() {
   const [error, setError] = useState(null);
   const [showImproveModal, setShowImproveModal] = useState(false);
   const [improvingComplaint, setImprovingComplaint] = useState(false);
+  const [processingMessage, setProcessingMessage] = useState('');
+  const statusRef = useRef(null);
+
+  const hasResults = Boolean(classification && complaint);
+
+  useEffect(() => {
+    if (loading || error || hasResults) {
+      window.requestAnimationFrame(() => {
+        statusRef.current?.scrollIntoView({
+          behavior: 'smooth',
+          block: 'start',
+        });
+      });
+    }
+  }, [loading, error, hasResults]);
 
   const handleSubmit = async (data) => {
     setLoading(true);
     setError(null);
     setClassification(null);
     setComplaint('');
+    setProcessingMessage('Classifying your civic issue...');
 
     try {
       // Step 1: Classify the issue
@@ -28,6 +44,7 @@ function HomePage() {
         data.location
       );
       setClassification(classificationResult);
+      setProcessingMessage('Generating your formal complaint with watsonx.ai...');
 
       // Step 2: Generate complaint and save to database
       const complaintResult = await generateComplaint(
@@ -44,7 +61,11 @@ function HomePage() {
         },
         data.complaintLanguage
       );
-      setComplaint(complaintResult.formattedComplaint);
+      const generatedComplaint = complaintResult.formattedComplaint?.trim();
+      if (!generatedComplaint) {
+        throw new Error('Complaint was generated but the response did not include display text.');
+      }
+      setComplaint(generatedComplaint);
     } catch (err) {
       console.error('Error processing issue:', err);
       
@@ -64,6 +85,7 @@ function HomePage() {
       setError(errorMessage);
     } finally {
       setLoading(false);
+      setProcessingMessage('');
     }
   };
 
@@ -90,15 +112,14 @@ function HomePage() {
       setImprovingComplaint(false);
     }
   };
-
-  const hasResults = classification && complaint;
-
   return (
     <div>
       {/* Issue Form */}
       <div className="mb-8">
         <IssueForm onSubmit={handleSubmit} loading={loading} />
       </div>
+
+      <div ref={statusRef} className="scroll-mt-6">
 
       {/* Error Message */}
       {error && (
@@ -116,7 +137,7 @@ function HomePage() {
       {/* Loading State */}
       {loading && (
         <div className="bg-white rounded-lg shadow-md p-8">
-          <LoadingSpinner message="Analyzing your issue and generating complaint..." />
+          <LoadingSpinner message={processingMessage || 'Analyzing your issue and generating complaint...'} />
         </div>
       )}
 
@@ -150,6 +171,7 @@ function HomePage() {
           </p>
         </div>
       )}
+      </div>
 
       {/* Improvement Modal */}
       <ImprovementModal
