@@ -61,16 +61,16 @@ class GenerateComplaintSerializer(serializers.Serializer):
     latitude = serializers.DecimalField(
         required=False,
         allow_null=True,
-        max_digits=20,
-        decimal_places=20
+        max_digits=12,
+        decimal_places=8
     )
     longitude = serializers.DecimalField(
         required=False,
         allow_null=True,
-        max_digits=20,
-        decimal_places=20
+        max_digits=12,
+        decimal_places=8
     )
-    classification = serializers.DictField(required=True)
+    classification = serializers.DictField(required=False)
 
 
 class ComplaintResponseSerializer(serializers.Serializer):

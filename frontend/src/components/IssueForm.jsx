@@ -31,8 +31,9 @@ const IssueForm = ({ onSubmit, loading }) => {
     setGettingLocation(true);
     navigator.geolocation.getCurrentPosition(
       (position) => {
-        setLatitude(position.coords.latitude);
-        setLongitude(position.coords.longitude);
+        // Backend accepts up to 8 decimal places for coordinates.
+        setLatitude(Number(position.coords.latitude.toFixed(8)));
+        setLongitude(Number(position.coords.longitude.toFixed(8)));
         setGettingLocation(false);
         // Optionally, you can use reverse geocoding here to get address
         alert(`Location captured: ${position.coords.latitude.toFixed(6)}, ${position.coords.longitude.toFixed(6)}`);
