@@ -96,8 +96,12 @@ const DashboardPage = () => {
   }
 
   const trends = calculateTrends();
-  const resolutionRate = stats?.status_counts?.resolved 
-    ? ((stats.status_counts.resolved / stats.total_issues) * 100).toFixed(1)
+  const totalIssues = stats?.total_issues || 0;
+  const statusCounts = stats?.by_status || {};
+  const categoryCounts = stats?.by_category || {};
+  const severityCounts = stats?.by_severity || {};
+  const resolutionRate = totalIssues && statusCounts.resolved
+    ? ((statusCounts.resolved / totalIssues) * 100).toFixed(1)
     : 0;
 
   return (
@@ -128,7 +132,7 @@ const DashboardPage = () => {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-600">Total Issues</p>
-                <p className="text-3xl font-bold text-gray-900 mt-2">{stats?.total_issues || 0}</p>
+                <p className="text-3xl font-bold text-gray-900 mt-2">{totalIssues}</p>
               </div>
               <div className="p-3 bg-blue-100 rounded-full">
                 <FiAlertCircle className="w-8 h-8 text-blue-600" />
@@ -144,7 +148,7 @@ const DashboardPage = () => {
               <div>
                 <p className="text-sm font-medium text-gray-600">Resolved</p>
                 <p className="text-3xl font-bold text-green-600 mt-2">
-                  {stats?.status_counts?.resolved || 0}
+                  {statusCounts.resolved || 0}
                 </p>
               </div>
               <div className="p-3 bg-green-100 rounded-full">
@@ -161,7 +165,7 @@ const DashboardPage = () => {
               <div>
                 <p className="text-sm font-medium text-gray-600">Pending</p>
                 <p className="text-3xl font-bold text-yellow-600 mt-2">
-                  {stats?.status_counts?.pending || 0}
+                  {statusCounts.pending || 0}
                 </p>
               </div>
               <div className="p-3 bg-yellow-100 rounded-full">
@@ -178,7 +182,7 @@ const DashboardPage = () => {
               <div>
                 <p className="text-sm font-medium text-gray-600">In Progress</p>
                 <p className="text-3xl font-bold text-blue-600 mt-2">
-                  {stats?.status_counts?.in_progress || 0}
+                  {statusCounts.in_progress || 0}
                 </p>
               </div>
               <div className="p-3 bg-blue-100 rounded-full">
@@ -197,8 +201,8 @@ const DashboardPage = () => {
           <div className="bg-white rounded-lg shadow-md p-6">
             <h2 className="text-xl font-bold text-gray-900 mb-4">Issues by Category</h2>
             <div className="space-y-3">
-              {stats?.category_counts && Object.entries(stats.category_counts).map(([category, count]) => {
-                const percentage = ((count / stats.total_issues) * 100).toFixed(1);
+              {Object.entries(categoryCounts).map(([category, count]) => {
+                const percentage = totalIssues ? ((count / totalIssues) * 100).toFixed(1) : 0;
                 return (
                   <div key={category}>
                     <div className="flex items-center justify-between mb-1">
@@ -224,8 +228,8 @@ const DashboardPage = () => {
           <div className="bg-white rounded-lg shadow-md p-6">
             <h2 className="text-xl font-bold text-gray-900 mb-4">Severity Distribution</h2>
             <div className="space-y-3">
-              {stats?.severity_counts && Object.entries(stats.severity_counts).map(([severity, count]) => {
-                const percentage = ((count / stats.total_issues) * 100).toFixed(1);
+              {Object.entries(severityCounts).map(([severity, count]) => {
+                const percentage = totalIssues ? ((count / totalIssues) * 100).toFixed(1) : 0;
                 return (
                   <div key={severity}>
                     <div className="flex items-center justify-between mb-1">
@@ -237,7 +241,7 @@ const DashboardPage = () => {
                         className="h-2 rounded-full transition-all"
                         style={{ 
                           width: `${percentage}%`,
-                          backgroundColor: SEVERITY_COLORS[severity]
+                          backgroundColor: SEVERITY_COLORS[severity]?.color || '#6B7280'
                         }}
                       />
                     </div>
@@ -289,7 +293,7 @@ const DashboardPage = () => {
                     <td className="px-6 py-4 whitespace-nowrap">
                       <span
                         className="px-2 py-1 text-xs font-medium rounded-full text-white"
-                        style={{ backgroundColor: SEVERITY_COLORS[issue.severity] }}
+                        style={{ backgroundColor: SEVERITY_COLORS[issue.severity]?.color || '#6B7280' }}
                       >
                         {issue.severity}
                       </span>

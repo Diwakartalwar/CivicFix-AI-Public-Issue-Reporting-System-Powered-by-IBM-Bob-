@@ -124,6 +124,53 @@ const CommunityIssues = () => {
     });
   };
 
+  const appendTextElement = (parent, tagName, className, text) => {
+    const element = document.createElement(tagName);
+    element.className = className;
+    element.textContent = text;
+    parent.appendChild(element);
+    return element;
+  };
+
+  const createPopupContent = (item) => {
+    const container = document.createElement('div');
+    container.className = 'p-2';
+
+    appendTextElement(
+      container,
+      'h3',
+      'font-bold text-lg mb-2',
+      item.category || 'Issue'
+    );
+
+    if (item.count) {
+      appendTextElement(
+        container,
+        'p',
+        'text-sm text-gray-600 mb-2',
+        `${item.count} issues in this area`
+      );
+    }
+
+    appendTextElement(
+      container,
+      'p',
+      'text-sm mb-2',
+      item.location || 'No location'
+    );
+
+    const badge = appendTextElement(
+      container,
+      'span',
+      'inline-block px-2 py-1 text-xs rounded',
+      item.severity || 'unknown'
+    );
+    badge.style.backgroundColor = getMarkerColor(item.severity);
+    badge.style.color = 'white';
+
+    return container;
+  };
+
   const MapController = () => {
     const map = useMap();
 
@@ -142,18 +189,7 @@ const CommunityIssues = () => {
             icon: createCustomIcon(item.severity)
           });
 
-          const popupContent = `
-            <div class="p-2">
-              <h3 class="font-bold text-lg mb-2">${item.category || 'Issue'}</h3>
-              ${item.count ? `<p class="text-sm text-gray-600 mb-2">${item.count} issues in this area</p>` : ''}
-              <p class="text-sm mb-2">${item.location || 'No location'}</p>
-              <span class="inline-block px-2 py-1 text-xs rounded" style="background-color: ${getMarkerColor(item.severity)}; color: white;">
-                ${item.severity}
-              </span>
-            </div>
-          `;
-
-          marker.bindPopup(popupContent);
+          marker.bindPopup(createPopupContent(item));
           markerClusterGroup.addLayer(marker);
         }
       });
@@ -362,7 +398,7 @@ const CommunityIssues = () => {
                         <h3 className="text-xl font-semibold text-gray-900">{issue.category}</h3>
                         <span
                           className="px-3 py-1 rounded-full text-sm font-medium text-white"
-                          style={{ backgroundColor: SEVERITY_COLORS[issue.severity] }}
+                          style={{ backgroundColor: SEVERITY_COLORS[issue.severity]?.color || '#6B7280' }}
                         >
                           {issue.severity}
                         </span>

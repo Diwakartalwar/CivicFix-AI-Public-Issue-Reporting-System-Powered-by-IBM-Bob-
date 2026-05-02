@@ -8,6 +8,7 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
 from django.db.models import Q
+from django.utils import timezone
 
 from .models import CivicIssue
 from .serializers import (
