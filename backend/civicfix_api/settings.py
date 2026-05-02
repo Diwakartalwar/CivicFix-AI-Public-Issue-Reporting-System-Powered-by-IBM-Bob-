@@ -146,6 +146,6 @@ REST_FRAMEWORK = {
     ],
 }
 
-# OpenAI Configuration
-OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')
-OPENAI_MODEL = os.getenv('OPENAI_MODEL', 'gpt-4o-mini')  # Cost-effective model, or use 'gpt-4' for better quality
+# Google Gemini Configuration
+GEMINI_API_KEY = os.getenv('GEMINI_API_KEY')
+GEMINI_MODEL = os.getenv('GEMINI_MODEL', 'gemini-pro')  # Free model with generous limits

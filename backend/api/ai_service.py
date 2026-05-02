@@ -1,41 +1,42 @@
 """
-OpenAI Integration Service
+Google Gemini Integration Service
 Handles all AI model interactions for classification, generation, and improvement
 """
 
 import os
 import json
 import logging
-from openai import OpenAI
+import google.generativeai as genai
 from django.conf import settings
 
 logger = logging.getLogger(__name__)
 
 
-class OpenAIService:
+class GeminiService:
     """
-    Service class for interacting with OpenAI API
+    Service class for interacting with Google Gemini API
     """
     
     def __init__(self):
-        """Initialize the OpenAI client"""
-        self.api_key = settings.OPENAI_API_KEY
-        self.model = settings.OPENAI_MODEL
+        """Initialize the Gemini client"""
+        self.api_key = settings.GEMINI_API_KEY
+        self.model_name = settings.GEMINI_MODEL
         
         if not self.api_key:
-            raise ValueError("OPENAI_API_KEY must be set in environment variables")
+            raise ValueError("GEMINI_API_KEY must be set in environment variables")
         
-        # Initialize OpenAI client
+        # Configure Gemini
         try:
-            self.client = OpenAI(api_key=self.api_key)
-            logger.info(f"Successfully initialized OpenAI with model: {self.model}")
+            genai.configure(api_key=self.api_key)
+            self.model = genai.GenerativeModel(self.model_name)
+            logger.info(f"Successfully initialized Gemini with model: {self.model_name}")
         except Exception as e:
-            logger.error(f"Failed to initialize OpenAI: {str(e)}")
+            logger.error(f"Failed to initialize Gemini: {str(e)}")
             raise
     
     def generate_text(self, prompt, max_tokens=500, temperature=0.7):
         """
-        Generate text using OpenAI
+        Generate text using Gemini
         
         Args:
             prompt (str): The input prompt
@@ -46,18 +47,18 @@ class OpenAIService:
             str: Generated text
         """
         try:
-            response = self.client.chat.completions.create(
-                model=self.model,
-                messages=[
-                    {"role": "system", "content": "You are a helpful assistant for civic issue management."},
-                    {"role": "user", "content": prompt}
-                ],
-                max_tokens=max_tokens,
-                temperature=temperature
+            generation_config = genai.types.GenerationConfig(
+                max_output_tokens=max_tokens,
+                temperature=temperature,
             )
             
-            generated_text = response.choices[0].message.content.strip()
-            logger.info("Successfully generated text from OpenAI")
+            response = self.model.generate_content(
+                prompt,
+                generation_config=generation_config
+            )
+            
+            generated_text = response.text.strip()
+            logger.info("Successfully generated text from Gemini")
             return generated_text
             
         except Exception as e:
@@ -159,7 +160,7 @@ def get_ai_service():
     """
     global _ai_service
     if _ai_service is None:
-        _ai_service = OpenAIService()
+        _ai_service = GeminiService()
     return _ai_service
 
 # Made with Bob
