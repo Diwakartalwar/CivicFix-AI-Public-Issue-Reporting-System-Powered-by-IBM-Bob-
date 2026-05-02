@@ -52,9 +52,13 @@ def test_generate(classification):
     data = {
         "issueDescription": "Garbage piling up on street corner",
         "location": "MG Road, Bangalore",
-        "category": classification.get("category"),
-        "severity": classification.get("severity"),
-        "urgency": classification.get("urgency")
+        "classification": {
+            "category": classification.get("category"),
+            "severity": classification.get("severity"),
+            "urgency": classification.get("urgency"),
+            "reasoning": classification.get("reasoning", ""),
+            "authority": classification.get("authority", {})
+        }
     }
     try:
         r = requests.post(f"{BASE_URL}/api/generate", json=data)
@@ -80,9 +84,13 @@ def test_generate_with_gps(classification):
         "location": "Church Street",
         "latitude": "12.97194",
         "longitude": "77.59369",
-        "category": classification.get("category"),
-        "severity": classification.get("severity"),
-        "urgency": classification.get("urgency")
+        "classification": {
+            "category": classification.get("category"),
+            "severity": classification.get("severity"),
+            "urgency": classification.get("urgency"),
+            "reasoning": classification.get("reasoning", ""),
+            "authority": classification.get("authority", {})
+        }
     }
     try:
         r = requests.post(f"{BASE_URL}/api/generate", json=data)
@@ -105,7 +113,7 @@ def test_improve(complaint):
     
     data = {
         "complaint": complaint.get("formattedComplaint", ""),
-        "improvementType": ["more_formal", "add_urgency"]
+        "improvementTypes": ["make_formal", "add_urgency"]
     }
     try:
         r = requests.post(f"{BASE_URL}/api/improve", json=data)
@@ -120,12 +128,16 @@ def test_improve(complaint):
 def test_community():
     print("\n=== TEST 6: COMMUNITY ISSUES ===")
     try:
-        r = requests.get(f"{BASE_URL}/api/community-issues")
+        r = requests.get(f"{BASE_URL}/api/issues")
         print(f"Status: {r.status_code}")
+        if r.status_code != 200:
+            print(f"ERROR Response: {r.text}")
+            return
         data = r.json()
-        print(f"Total issues: {len(data)}")
-        if data:
-            print(f"First issue: {json.dumps(data[0], indent=2)}")
+        issues = data.get("issues", [])
+        print(f"Total issues: {data.get('count', 0)}")
+        if issues:
+            print(f"First issue: {json.dumps(issues[0], indent=2)}")
     except Exception as e:
         print(f"ERROR: {e}")
 

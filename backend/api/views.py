@@ -147,7 +147,16 @@ def generate_complaint(request):
         location = serializer.validated_data.get('location', '')
         latitude = serializer.validated_data.get('latitude')
         longitude = serializer.validated_data.get('longitude')
-        classification = serializer.validated_data['classification']
+        classification = serializer.validated_data.get('classification')
+        if not classification:
+            # Backward compatibility for clients that send classification fields at top-level
+            classification = {
+                "category": request.data.get('category', 'Other'),
+                "severity": request.data.get('severity', 'medium'),
+                "urgency": request.data.get('urgency', 'medium'),
+                "reasoning": request.data.get('reasoning', ''),
+                "authority": request.data.get('authority', {})
+            }
         
         # Extract classification details
         category = classification.get('category', 'Other')
