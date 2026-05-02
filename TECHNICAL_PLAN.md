@@ -439,7 +439,7 @@ CORS_ALLOWED_ORIGINS=http://localhost:3000
 WATSONX_API_KEY=your-api-key
 WATSONX_PROJECT_ID=your-project-id
 WATSONX_URL=https://us-south.ml.cloud.ibm.com
-WATSONX_MODEL_ID=google/flan-t5-xl
+WATSONX_MODEL_ID=ibm/granite-3-3-8b-instruct
 ```
 
 ### Frontend (.env)
@@ -455,7 +455,7 @@ Django==4.2.7
 djangorestframework==3.14.0
 django-cors-headers==4.3.1
 python-dotenv==1.0.0
-ibm-watsonx-ai==0.2.6
+ibm-watsonx-ai>=1.4.0
 requests==2.31.0
 ```
 

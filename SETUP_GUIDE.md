@@ -64,7 +64,7 @@ CORS_ALLOWED_ORIGINS=http://localhost:3000
 WATSONX_API_KEY=your-watsonx-api-key
 WATSONX_PROJECT_ID=your-project-id
 WATSONX_URL=https://us-south.ml.cloud.ibm.com
-WATSONX_MODEL_ID=google/flan-t5-xl
+WATSONX_MODEL_ID=ibm/granite-3-3-8b-instruct
 ```
 
 **How to get IBM watsonx.ai credentials:**
@@ -72,7 +72,7 @@ WATSONX_MODEL_ID=google/flan-t5-xl
 2. Create a watsonx.ai instance
 3. Get your API key from IBM Cloud IAM
 4. Create a project and get the project ID
-5. Ensure you have access to the `google/flan-t5-xl` model
+5. Ensure you have access to the `ibm/granite-3-3-8b-instruct` model
 
 #### Step 2.5: Run Migrations
 
@@ -306,7 +306,7 @@ npm install
 | `WATSONX_API_KEY` | IBM watsonx.ai API key | Yes | `your-api-key` |
 | `WATSONX_PROJECT_ID` | Project ID | Yes | `your-project-id` |
 | `WATSONX_URL` | watsonx.ai URL | Yes | `https://us-south.ml.cloud.ibm.com` |
-| `WATSONX_MODEL_ID` | Model to use | Yes | `google/flan-t5-xl` |
+| `WATSONX_MODEL_ID` | Model to use | Yes | `ibm/granite-3-3-8b-instruct` |
 
 ### Frontend (.env)
 

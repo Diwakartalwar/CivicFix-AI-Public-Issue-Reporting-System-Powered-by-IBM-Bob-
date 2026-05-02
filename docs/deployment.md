@@ -197,7 +197,7 @@ CORS_ALLOWED_ORIGINS=https://your-cloudfront-domain.cloudfront.net
 WATSONX_API_KEY=your-api-key
 WATSONX_PROJECT_ID=your-project-id
 WATSONX_URL=https://us-south.ml.cloud.ibm.com
-WATSONX_MODEL_ID=google/flan-t5-xl
+WATSONX_MODEL_ID=ibm/granite-3-3-8b-instruct
 ```
 
 4. **Create systemd service:**
@@ -415,7 +415,7 @@ az webapp config appsettings set \
     WATSONX_API_KEY="your-api-key" \
     WATSONX_PROJECT_ID="your-project-id" \
     WATSONX_URL="https://us-south.ml.cloud.ibm.com" \
-    WATSONX_MODEL_ID="google/flan-t5-xl"
+    WATSONX_MODEL_ID="ibm/granite-3-3-8b-instruct"
 ```
 
 5. **Configure startup command:**
@@ -449,7 +449,7 @@ services:
       - WATSONX_API_KEY=${WATSONX_API_KEY}
       - WATSONX_PROJECT_ID=${WATSONX_PROJECT_ID}
       - WATSONX_URL=${WATSONX_URL}
-      - WATSONX_MODEL_ID=google/flan-t5-xl
+      - WATSONX_MODEL_ID=ibm/granite-3-3-8b-instruct
     volumes:
       - ./backend:/app
     command: gunicorn civicfix_api.wsgi:application --bind 0.0.0.0:8000
@@ -551,7 +551,7 @@ docker-compose down
 | `WATSONX_API_KEY` | IBM watsonx.ai API key | Yes | `your-api-key` |
 | `WATSONX_PROJECT_ID` | IBM watsonx.ai project ID | Yes | `your-project-id` |
 | `WATSONX_URL` | IBM watsonx.ai URL | Yes | `https://us-south.ml.cloud.ibm.com` |
-| `WATSONX_MODEL_ID` | Model to use | Yes | `google/flan-t5-xl` |
+| `WATSONX_MODEL_ID` | Model to use | Yes | `ibm/granite-3-3-8b-instruct` |
 
 ### Frontend Environment Variables
 
@@ -586,7 +586,7 @@ docker-compose down
 **Problem**: watsonx.ai returns model not found.
 
 **Solution**:
-- Verify model ID is correct: `google/flan-t5-xl`
+- Verify model ID is correct: `ibm/granite-3-3-8b-instruct`
 - Check model is available in your region
 - Ensure project has access to the model
 

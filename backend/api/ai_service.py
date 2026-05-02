@@ -1,42 +1,60 @@
 """
-Google Gemini Integration Service
+IBM watsonx.ai Integration Service
 Handles all AI model interactions for classification, generation, and improvement
 """
 
-import os
 import json
 import logging
-import google.generativeai as genai
 from django.conf import settings
 
 logger = logging.getLogger(__name__)
 
 
-class GeminiService:
+class WatsonxService:
     """
-    Service class for interacting with Google Gemini API
+    Service class for interacting with IBM watsonx.ai
     """
     
     def __init__(self):
-        """Initialize the Gemini client"""
-        self.api_key = settings.GEMINI_API_KEY
-        self.model_name = settings.GEMINI_MODEL
+        """Initialize the watsonx.ai model client"""
+        self.api_key = settings.WATSONX_API_KEY
+        self.project_id = settings.WATSONX_PROJECT_ID
+        self.space_id = settings.WATSONX_SPACE_ID
+        self.url = settings.WATSONX_URL
+        self.model_id = settings.WATSONX_MODEL_ID
         
         if not self.api_key:
-            raise ValueError("GEMINI_API_KEY must be set in environment variables")
+            raise ValueError("WATSONX_API_KEY must be set in environment variables")
+        if not self.project_id and not self.space_id:
+            raise ValueError("WATSONX_PROJECT_ID or WATSONX_SPACE_ID must be set in environment variables")
         
-        # Configure Gemini
+        # Import lazily so Django checks can still run before dependencies are installed.
         try:
-            genai.configure(api_key=self.api_key)
-            self.model = genai.GenerativeModel(self.model_name)
-            logger.info(f"Successfully initialized Gemini with model: {self.model_name}")
+            from ibm_watsonx_ai import Credentials
+            from ibm_watsonx_ai.foundation_models import ModelInference
+            from ibm_watsonx_ai.metanames import GenTextParamsMetaNames as GenParams
+
+            self._gen_params = GenParams
+            credentials = Credentials(api_key=self.api_key, url=self.url)
+            model_kwargs = {
+                "model_id": self.model_id,
+                "credentials": credentials,
+            }
+
+            if self.project_id:
+                model_kwargs["project_id"] = self.project_id
+            else:
+                model_kwargs["space_id"] = self.space_id
+
+            self.model = ModelInference(**model_kwargs)
+            logger.info(f"Successfully initialized watsonx.ai with model: {self.model_id}")
         except Exception as e:
-            logger.error(f"Failed to initialize Gemini: {str(e)}")
+            logger.error(f"Failed to initialize watsonx.ai: {str(e)}")
             raise
     
     def generate_text(self, prompt, max_tokens=500, temperature=0.7):
         """
-        Generate text using Gemini
+        Generate text using IBM watsonx.ai
         
         Args:
             prompt (str): The input prompt
@@ -47,18 +65,16 @@ class GeminiService:
             str: Generated text
         """
         try:
-            generation_config = genai.types.GenerationConfig(
-                max_output_tokens=max_tokens,
-                temperature=temperature,
-            )
-            
-            response = self.model.generate_content(
-                prompt,
-                generation_config=generation_config
-            )
-            
-            generated_text = response.text.strip()
-            logger.info("Successfully generated text from Gemini")
+            params = {
+                self._gen_params.MAX_NEW_TOKENS: max_tokens,
+                self._gen_params.TEMPERATURE: temperature,
+            }
+
+            generated_text = self.model.generate_text(
+                prompt=prompt,
+                params=params
+            ).strip()
+            logger.info("Successfully generated text from watsonx.ai")
             return generated_text
             
         except Exception as e:
@@ -168,7 +184,7 @@ def get_ai_service():
     """
     global _ai_service
     if _ai_service is None:
-        _ai_service = GeminiService()
+        _ai_service = WatsonxService()
     return _ai_service
 
 # Made with Bob

@@ -148,6 +148,9 @@ REST_FRAMEWORK = {
     ],
 }
 
-# Google Gemini Configuration
-GEMINI_API_KEY = os.getenv('GEMINI_API_KEY')
-GEMINI_MODEL = os.getenv('GEMINI_MODEL', 'gemini-pro')  # Free model with generous limits
+# IBM watsonx.ai Configuration
+WATSONX_API_KEY = os.getenv('WATSONX_API_KEY')
+WATSONX_PROJECT_ID = os.getenv('WATSONX_PROJECT_ID')
+WATSONX_SPACE_ID = os.getenv('WATSONX_SPACE_ID')
+WATSONX_URL = os.getenv('WATSONX_URL', 'https://us-south.ml.cloud.ibm.com')
+WATSONX_MODEL_ID = os.getenv('WATSONX_MODEL_ID', 'ibm/granite-3-3-8b-instruct')

@@ -216,7 +216,7 @@ Enhances an existing complaint based on selected criteria.
 
 ### AI Model
 - IBM watsonx.ai
-- Model: `google/flan-t5-xl` (cost-effective, high-quality)
+- Model: `ibm/granite-3-3-8b-instruct` (watsonx.ai-hosted IBM Granite model)
 
 ## 📁 Project Structure
 
@@ -264,8 +264,10 @@ CORS_ALLOWED_ORIGINS=http://localhost:3000
 # IBM watsonx.ai Configuration
 WATSONX_API_KEY=your-api-key
 WATSONX_PROJECT_ID=your-project-id
+# Optional alternative to project ID if using a deployment space:
+# WATSONX_SPACE_ID=your-space-id
 WATSONX_URL=https://us-south.ml.cloud.ibm.com
-WATSONX_MODEL_ID=google/flan-t5-xl
+WATSONX_MODEL_ID=ibm/granite-3-3-8b-instruct
 ```
 
 ### Frontend Environment Variables
