@@ -73,7 +73,7 @@ const CommunityIssues = () => {
       const searchLower = filters.search.toLowerCase();
       filtered = filtered.filter(issue =>
         issue.issue_description.toLowerCase().includes(searchLower) ||
-        issue.location.toLowerCase().includes(searchLower)
+        (issue.location || '').toLowerCase().includes(searchLower)
       );
     }
 
@@ -116,7 +116,8 @@ const CommunityIssues = () => {
     });
   };
 
-  // Default center (you can change this to your city's coordinates)
+  // Default center - configure this for your deployment location
+  // TODO: Move to environment variable for production deployments
   const defaultCenter = [28.6139, 77.2090]; // Delhi, India
   const defaultZoom = 12;
 

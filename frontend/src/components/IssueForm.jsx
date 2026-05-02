@@ -128,6 +128,9 @@ const IssueForm = ({ onSubmit, loading }) => {
               {gettingLocation ? 'Getting...' : 'Use GPS'}
             </button>
           </div>
+          {errors.location && (
+            <p className="mt-1 text-sm text-red-500">{errors.location}</p>
+          )}
           <p className="mt-1 text-sm text-gray-500">
             {latitude && longitude ? (
               <span className="text-green-600">
