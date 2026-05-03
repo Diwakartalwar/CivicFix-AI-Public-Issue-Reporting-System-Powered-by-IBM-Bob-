@@ -53,7 +53,7 @@ title: CivicFix Docs
   <p>Interactive documentation hub for the CivicFix AI civic-issue reporting project.</p>
 
   <div class="btn-row">
-    <a class="btn" href="../TECH_SPEC.md">View Technical Specification</a>
+    <a class="btn" href="TECH_SPEC.md">View Technical Specification</a>
     <a class="btn" href="TECHNICAL_PLAN.md">Open Technical Plan</a>
     <a class="btn" href="/">Repository Root</a>
   </div>
@@ -74,9 +74,11 @@ Below are quick entry points into the repo documentation and design artifacts.
 
 ## Table of Contents
 
-- [Technical Specification](../TECH_SPEC.md)
+- [Technical Specification](TECH_SPEC.md)
 - [Technical Plan](TECHNICAL_PLAN.md)
 - [Deployment Guide](deployment.md)
+ - [BOB Build Story](BOB_BUILD_STORY.md)
+ - [Setup Guide](SETUP_GUIDE.md)
 
 ## Quick API snippets
 

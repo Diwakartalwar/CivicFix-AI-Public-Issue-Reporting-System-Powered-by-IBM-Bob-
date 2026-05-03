@@ -1,5 +1,6 @@
-# CivicFix Bob Build Story
+<link rel="stylesheet" href="assets/style.css">
 
+# CivicFix Bob Build Story
 ## Project Summary
 
 CivicFix is an AI-powered public issue reporting system built for the IBM Bob Hackathon. It helps citizens convert informal civic complaints into structured, professional reports that can be submitted to local authorities. The system uses IBM watsonx.ai for classification, complaint generation, and complaint improvement.

@@ -1,5 +1,6 @@
-# CivicFix Setup Guide
+<link rel="stylesheet" href="assets/style.css">
 
+# CivicFix Setup Guide
 This guide will help you set up and run the CivicFix application locally.
 
 ## Prerequisites

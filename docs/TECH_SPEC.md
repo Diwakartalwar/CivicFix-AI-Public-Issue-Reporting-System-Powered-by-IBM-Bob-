@@ -2,6 +2,14 @@
 
 ---
 
+<style>
+	body { font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial; line-height:1.6; color:#0f172a }
+	h1,h2,h3 { color:#0f172a }
+	pre, code { background:#0f172a; color:#e6eef8; padding:8px; border-radius:6px }
+	.toc { margin: 0 0 1rem }
+	.card { background:#fff; padding:12px; border-radius:8px }
+</style>
+
 📌 **Summary**
 
 CivicFix is an AI-powered civic issue reporting platform that transforms unstructured citizen complaints into structured, verified, and actionable reports for government authorities. The system leverages AI to classify issues, generate formal complaints, and prioritize them based on community signals such as voting and verification. The goal is to bridge the gap between citizens and authorities by improving clarity, prioritization, and accountability.
