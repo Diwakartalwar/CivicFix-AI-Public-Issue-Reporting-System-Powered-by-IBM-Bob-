@@ -55,7 +55,7 @@ title: CivicFix Docs
   <div class="btn-row">
     <a class="btn" href="TECH_SPEC.md">View Technical Specification</a>
     <a class="btn" href="TECHNICAL_PLAN.md">Open Technical Plan</a>
-    <a class="btn" href="/">Repository Root</a>
+    <a class="btn" href="https://github.com/Diwakartalwar/CivicFix-AI-Public-Issue-Reporting-System-Powered-by-IBM-Bob-">Repository Root</a>
   </div>
 
   <div style="margin-top:1.2rem; opacity:.95">Quick links • Animated hero • Mobile friendly</div>
