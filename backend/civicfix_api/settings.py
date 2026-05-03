@@ -152,14 +152,10 @@ REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.AllowAny',
     ],
-    'DEFAULT_THROTTLE_CLASSES': [
-        'rest_framework.throttling.AnonRateThrottle',
-        'rest_framework.throttling.UserRateThrottle',
-    ],
-    'DEFAULT_THROTTLE_RATES': {
-        'anon': '50/MINUTE',
-        'user': '100/MINUTE',
-    },
+    # Throttling disabled: remove/clear throttle classes to allow unrestricted AI calls.
+    # If you want to re-enable throttling later, restore these entries or set env-controlled values.
+    'DEFAULT_THROTTLE_CLASSES': [],
+    'DEFAULT_THROTTLE_RATES': {},
 }
 
 # IBM watsonx.ai Configuration
